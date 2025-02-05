@@ -201,29 +201,43 @@ int main(int argc, char *argv[])
 
 		r = sdust(0, (uint8_t*)ks->seq.s, -1, T, W, &n);
 		if (n > 0) {
-			begin = 1;
+			int frg = 0, x;
+			begin = 0;
 			for (i = 0; i < n; ++i) {
 				end = (int)(r[i]>>32) - 1;
-				low_length = (int)r[i] - end + 2;
+				if (end > ks->seq.l) end = ks->seq.l - 1;
 
-				printf(">%s-frag%02d {\"from\": %d, \"to\": %d}\n", ks->name.s,i+1, begin, end);
+				x =  (int)r[i];
+				if (x > ks->seq.l) x = ks->seq.l;
 
-				start = ks->seq.s + begin - 1;
-				stop  = ks->seq.s + end;
-				mem = *stop;
-				*stop = 0;
-				printf("%s\n", start);
-				*stop = mem;
-				begin = end + low_length - 1;
+				low_length = x - end;
+
+
+				start = ks->seq.s + begin;
+				stop  = ks->seq.s + end + 1;
+
+				if (end - begin > 0) {
+					mem = *stop;
+					*stop = 0;
+					frg++;
+					printf(">%s-frag%02d {\"from\":%d,\"to\":%d}\n", 
+							ks->name.s,frg, begin + 1, end + 1);
+					printf("%s\n", start);
+					*stop = mem;
+				}
+
+				begin = end + low_length;
 			}
 
 			end = ks->seq.l;
 
-			printf(">%s-frag%02d {\"from\": %d, \"to\": %d}\n", ks->name.s,i+1, begin, end);
 
-			start = ks->seq.s + begin - 1;
-			printf("%s\n", start);
-		
+			start = ks->seq.s + begin;
+			if (end - begin > 0) {
+				frg++;
+				printf(">%s-frag%02d {\"from\": %d, \"to\": %d}\n", ks->name.s,frg, begin+1, end);
+				printf("%s\n", start);
+			}
 		} else {
 			printf(">%s\n", ks->name.s);
 			printf("%s\n", ks->seq.s);

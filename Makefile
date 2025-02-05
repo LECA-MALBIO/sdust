@@ -3,7 +3,7 @@ CFLAGS=		-g -Wall -Wc++-compat -std=c99 -O2
 CPPFLAGS=
 INCLUDES=
 OBJS=
-PROG=		sdust sdust_mask sdust_frag
+PROG=		sdust sdust_mask sdust_frag sdust_low
 LIBS=		-lz
 
 ifneq ($(asan),)
@@ -25,6 +25,9 @@ sdust:sdust.o
 sdust_mask:sdust_mask.o
 		$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
 
+sdust_low:sdust_low.o
+		$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
+
 sdust_frag:sdust_frag.o
 		$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
 
@@ -39,3 +42,4 @@ depend:
 sdust.o: kdq.h kalloc.h kvec.h sdust.h ketopt.h kseq.h
 sdust_mask.o: kdq.h kalloc.h kvec.h sdust.h ketopt.h kseq.h
 sdust_frag.o: kdq.h kalloc.h kvec.h sdust.h ketopt.h kseq.h
+sdust_low.o: kdq.h kalloc.h kvec.h sdust.h ketopt.h kseq.h

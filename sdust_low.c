@@ -194,10 +194,11 @@ int main(int argc, char *argv[])
 	ks = kseq_init(fp);
 	while (kseq_read(ks) >= 0) {
 		uint64_t *r;
-		int i, n;
-		int begin, end;
-
+		int i, n = 0;
+		int frg = 0, begin, end;
+		char mem;
 		r = sdust(0, (uint8_t*)ks->seq.s, -1, T, W, &n);
+
 		for (i = 0; i < n; ++i) {
 			begin = (int)(r[i]>>32);
 		    end = (int)r[i] - 1;
@@ -210,14 +211,15 @@ int main(int argc, char *argv[])
 				end = ks->seq.l - 1;
 			}
 
-			if (begin - end + 1 > 0) {
-				memset(ks->seq.s + begin - 1, 'N', end - begin + 1);
+			if (end - begin > 0) {
+				mem = ks->seq.s[end+1];
+				ks->seq.s[end+1]=0;
+				frg++;
+				printf(">%s-low%02d {\"from\":%d,\"to\":%d}\n", ks->name.s,frg,begin+1,end+1);
+				printf("%s\n", ks->seq.s + begin);
+				ks->seq.s[end+1] = mem;
 			}
 		}
-		
-		printf(">%s\n", ks->name.s);
-		printf("%s\n", ks->seq.s);
-
 		free(r);
 	}
 	kseq_destroy(ks);
