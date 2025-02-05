@@ -204,11 +204,16 @@ int main(int argc, char *argv[])
 			int frg = 0, x;
 			begin = 0;
 			for (i = 0; i < n; ++i) {
-				end = (int)(r[i]>>32) - 1;
-				if (end > ks->seq.l) end = ks->seq.l - 1;
+				end = (int)(r[i]>>32)-1;
+
+				if (n==1 && (end > (int)(ks->seq.l))) {
+					fprintf(stderr, "Warning: seq %s low segment %d/%d from %d to %d (seq length %d)\n",ks->name.s,i,n,end,(int)r[i],ks->seq.l);
+				}
+
+				if (end > (int)(ks->seq.l)) end = ks->seq.l - 1;
 
 				x =  (int)r[i];
-				if (x > ks->seq.l) x = ks->seq.l;
+				if (x > (int)(ks->seq.l)) x = ks->seq.l;
 
 				low_length = x - end;
 
@@ -217,6 +222,7 @@ int main(int argc, char *argv[])
 				stop  = ks->seq.s + end + 1;
 
 				if (end - begin > 0) {
+					// fprintf(stderr, "Info: %s: high complexity from %d to %d\n",ks->name.s,begin+1,end+1);
 					mem = *stop;
 					*stop = 0;
 					frg++;
