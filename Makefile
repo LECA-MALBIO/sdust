@@ -3,7 +3,7 @@ CFLAGS=		-g -Wall -Wc++-compat -std=c99 -O2
 CPPFLAGS=
 INCLUDES=
 OBJS=
-PROG=		sdust
+PROG=		sdust sdust_mask sdust_frag
 LIBS=		-lz
 
 ifneq ($(asan),)
@@ -22,6 +22,12 @@ all:$(PROG)
 sdust:sdust.o
 		$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
 
+sdust_mask:sdust_mask.o
+		$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
+
+sdust_frag:sdust_frag.o
+		$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
+
 clean:
 		rm -fr gmon.out *.o a.out $(PROG) *~ *.a *.dSYM
 
@@ -31,3 +37,5 @@ depend:
 # DO NOT DELETE
 
 sdust.o: kdq.h kalloc.h kvec.h sdust.h ketopt.h kseq.h
+sdust_mask.o: kdq.h kalloc.h kvec.h sdust.h ketopt.h kseq.h
+sdust_frag.o: kdq.h kalloc.h kvec.h sdust.h ketopt.h kseq.h
